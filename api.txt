@@ -4,14 +4,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class API {
 	
-	public int getLength(String quote) throws UnsupportedEncodingException {
-		String URL = "http://indic-wp.thisisjava.com/api/getLength.php?string=" + URLEncoder.encode(quote, "UTF-8") + "&language='telugu'";
+	public int getLength(char[] phraseChars) throws UnsupportedEncodingException {
+		String quote1 = String.valueOf(phraseChars);
+		String URL = "http://indic-wp.thisisjava.com/api/getLength.php?string=" + URLEncoder.encode(quote1, "UTF-8") + "&language='telugu'";
 		String newURL = URL.replaceAll(" ", "%20");
     
 		Client client = Client.create();
@@ -29,6 +29,15 @@ public class API {
     	return q_length;
 	}
 	
+	public String chooseLang(String quote) {
+		if (quote.matches(".*[a-zA-Z]+.*")) {
+			return "English";
+		}
+		else {
+			return "Telugu";
+		}
+	}
+	
 	public ArrayList<String> parseLogicalChars(ArrayList<String> quote_array_db) throws SQLException, UnsupportedEncodingException {
 		
 		String[] quote_arraydb = quote_array_db.toArray(new String[0]);
@@ -36,7 +45,8 @@ public class API {
 		ArrayList<String> quote_array = new ArrayList<String>();
 		
 		for (int quote_i = 0; quote_i < quote_arraydb.length; quote_i++) {
-			String URL = "http://indic-wp.thisisjava.com/api/getLogicalChars.php?string=" + URLEncoder.encode(quote_arraydb[quote_i], "UTF-8") + "&language='telugu'";
+			String lang = chooseLang(quote_arraydb[quote_i]);
+			String URL = "http://indic-wp.thisisjava.com/api/getLogicalChars.php?string=" + URLEncoder.encode(quote_arraydb[quote_i], "UTF-8") + "&language='" + lang + "'";
 			String newURL = URL.replaceAll(" ", "%20");
         
 			Client client = Client.create();
