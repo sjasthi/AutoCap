@@ -1,0 +1,5 @@
+https://www.apache.org/dyn/closer.lua/poi/release/bin/poi-bin-5.0.0-20210120.zip  (Apache POI - Power Point Integration)
+
+https://eclipse-ee4j.github.io/jersey/  (Jersey to talk to the web services and getting the responses)
+
+json.org (???)
