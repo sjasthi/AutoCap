@@ -78,7 +78,7 @@ public class API {
 		
 		String[] quote_arraydb = quote_array_db.toArray(new String[0]);
 		
-		ArrayList<String> quote_array = new ArrayList<String>();
+		ArrayList<String> filler_array = new ArrayList<String>();
 		
 		for (int i = 0; i < quote_arraydb.length; i++) {
 			String lang = chooseLang(quote_arraydb[i]);
@@ -104,10 +104,10 @@ public class API {
         	}
         	
         	String quote = String.join("", temp_array);
-        	quote_array.add(quote);
+        	filler_array.add(quote);
 		}
 		
-		return quote_array;
+		return filler_array;
 	}
 
 
