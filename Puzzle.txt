@@ -28,16 +28,22 @@ public class Puzzle {
 	
 	/*
 	Notes for default table size of 12x16:
-		Good table_size = 30
+		Good table size:
+		row_width = 30
+		row_height = 30
 		place in middle of power-point coordinates:
 		tableMoveX = 140
 		tableMoveY = 130
 	*/
 	
-	private final static int tableMoveX = 115;
-	private final static int tableMoveY = 105;
-	private final static int row_width = 30;
-	private final static int row_height = 30;
+	//side_label_width should stay at 30 at all times in order to not overlap with table
+	//or else table X and Y coordinates will have to be adjusted.
+	private final static int tableMoveX = 115; 
+	private final static int tableMoveY = 105; 
+	private final static int table_width = 30;
+	private final static int table_height = 30;
+	private final static int side_label_width = 30;
+	
 	private final static double table_fontSize = 15.0;
 	private final static String table_font = "Arial";
 	private final static String content_font = "Arial";
@@ -96,33 +102,20 @@ public class Puzzle {
 	}
 	*/
 	
-	public static void createTitle(HSLFSlide slide) {
+	public static void createTitle(HSLFSlide slide, String title_name, int width, int height) {
 		HSLFTextBox title = slide.createTextBox();
 		HSLFTextParagraph p = title.getTextParagraphs().get(0);
 		p.setTextAlign(TextAlign.CENTER);
 		HSLFTextRun r = p.getTextRuns().get(0);
 		r.setBold(true);
 		r.setFontColor(Color.black);
-		r.setText("Puzzle");
+		r.setText(title_name);
 		r.setFontFamily(content_font);
 		r.setFontSize(35.);
-		title.setAnchor(new Rectangle(270,5,200,60));
+		title.setAnchor(new Rectangle(270,5,width,height));
 	}
 	
-	public static void createTitle2(HSLFSlide slide) {
-		HSLFTextBox title = slide.createTextBox();
-		HSLFTextParagraph p = title.getTextParagraphs().get(0);
-		p.setTextAlign(TextAlign.CENTER);
-		HSLFTextRun r = p.getTextRuns().get(0);
-		r.setBold(true);
-		r.setFontColor(Color.black);
-		r.setText("Puzzle Solution");
-		r.setFontFamily(content_font);
-		r.setFontSize(35.);
-		title.setAnchor(new Rectangle(270,5,320,60));
-	}
-	
-	public static void createSlideNum(HSLFSlide slide, int slide_num) {
+	public static void createSlideNum(HSLFSlide slide, int slide_num, int width, int height) {
 		HSLFTextBox slide_number = slide.createTextBox();
 		HSLFTextParagraph p = slide_number.getTextParagraphs().get(0);
 		p.setTextAlign(TextAlign.CENTER);
@@ -131,8 +124,7 @@ public class Puzzle {
 		r.setText("" + slide_num + "");
 		r.setFontFamily(content_font);
 		r.setFontSize(30.);
-		//220 = width (x)coordinate, 5 = height (y)coordinate, 50 = textbox width, 50 = textbox height
-		slide_number.setAnchor(new Rectangle(221,6,49,49));
+		slide_number.setAnchor(new Rectangle(221,6,width,height));
 	}
 	
 	public static void createLine(HSLFSlide slide, int x, int y, int width, int height) {
@@ -187,12 +179,12 @@ public class Puzzle {
 		}
 		
 		for (int i = 0; i < num_column; i++) {
-			top_row.setColumnWidth(i, row_width);
-			side_row.setColumnWidth(0, row_width);
+			top_row.setColumnWidth(i, table_width);
+			side_row.setColumnWidth(0, side_label_width);
 		}
 		
 		for (int i = 0; i < num_row; i++) {
-			side_row.setRowHeight(i, row_height);
+			side_row.setRowHeight(i, table_height);
 			top_row.setRowHeight(0, 10);
 		}
 		
@@ -200,18 +192,18 @@ public class Puzzle {
 		side_row.moveTo(tableMoveX - 30, tableMoveY); // x - 30 to match table
 	}
 	
-	public static char[][] genGrid(HSLFTable table, int num_row, int num_column, char[] phraseChars1, boolean solution) {
+	public static char[][] genGrid(HSLFTable table, int num_row, int num_column, char[] phraseChars1, boolean solution, String filler) {
 		Random rand = new Random();
 		
-		String values = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		//String values = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		
 		char[][] grid = new char[num_row][num_column];
 		
-		int size = values.length();
+		int size = filler.length();
 		
 		for (int i = 0; i < num_row; i++) {		
 		    for (int j = 0; j < num_column; j++) {
-		    	grid[i][j] = values.charAt(rand.nextInt(size));
+		    	grid[i][j] = filler.charAt(rand.nextInt(size));
 		    }
 		}
 		
@@ -384,14 +376,16 @@ public class Puzzle {
 		
 		ArrayList<String> list_quotes = quotes_DB.connect_to_db();
 		
-		API get_array = new API();
+		API api = new API();
 		
-		ArrayList<String> list_quotes1 = get_array.parseLogicalChars(list_quotes);
-		
+		ArrayList<String> list_quotes1 = api.parseLogicalChars(list_quotes);
 		String[] quote_array = list_quotes1.toArray(new String[0]); //turn ArrayList into Array of all the strings
 		
+		ArrayList<String> filler_array1 = api.getFillers(list_quotes);
+		String[] filler_array = filler_array1.toArray(new String[0]);
+		
 		int no_solution_slide = 1;
-		int solution_slide = quote_array.length + 1;
+		int solution_slide = 1;
 		
 		int num_column = 18; //width of 18
 		int num_row = 14; //height of 14
@@ -405,23 +399,16 @@ public class Puzzle {
 		for (int index = 0; index < quote_array.length; index++) {
 			
 			HSLFSlide slide = ppt.createSlide();
-	
-			createTitle2(slide); //create template for slide1: puzzle no solution
+			String title_name = "Puzzle Solution";
+			createTitle(slide, title_name, 320, 60); //create template for slide1: puzzle no solution
 			//createFooter(slide, name);
 			createPic(ppt, slide); //add logo picture
 		
-		
-			//create text box lines   
-			createLine(slide, 220, 5, 50, 0); //top line
-			createLine(slide, 270, 5, 0, 50); //right line
-			createLine(slide, 220, 55, 50, 0); //bottom line
-			createLine(slide, 220, 5, 0, 50); //left line
-
 			HSLFTable table = slide.createTable(num_row, num_column); //create a table of 12 rows and 16 columns
 			getLabels(slide, num_row, num_column); //create labels for slide1
 			
 			char[] phraseChars = quote_array[index].toCharArray(); 
-			char grid[][] = genGrid(table, num_row, num_column, phraseChars, true); //call method to generate Grid
+			char grid[][] = genGrid(table, num_row, num_column, phraseChars, true, filler_array[index]); //call method to generate Grid
 		
 			for(int i = 0; i < num_column; i++) {
 				for(int j = 0; j < num_row; j++) {
@@ -441,18 +428,35 @@ public class Puzzle {
 			}
 		
 			for (int i = 0; i < num_column; i++) {
-				table.setColumnWidth(i, row_width);
+				table.setColumnWidth(i, table_width);
 			}
 		
 			for (int i = 0; i < num_row; i++) {
-				table.setRowHeight(i, row_height);
+				table.setRowHeight(i, table_height);
 			}
 		
 			table.moveTo(tableMoveX, tableMoveY);
 			
-			createSlideNum(slide, solution_slide);
+			if (no_solution_slide >= 100) {
+				createSlideNum(slide, no_solution_slide, 65, 49);
+				
+				//create text box lines   
+				createLine(slide, 220, 5, 65, 0); //top line
+				createLine(slide, 285, 5, 0, 50); //right line
+				createLine(slide, 220, 55, 65, 0); //bottom line
+				createLine(slide, 220, 5, 0, 50); //left line
+			}
+			else {
+				createSlideNum(slide, no_solution_slide, 49, 49);
+				
+				//create text box lines   
+				createLine(slide, 220, 5, 50, 0); //top line
+				createLine(slide, 270, 5, 0, 50); //right line
+				createLine(slide, 220, 55, 50, 0); //bottom line
+				createLine(slide, 220, 5, 0, 50); //left line
+			}
 			
-			solution_slide = solution_slide + 1;
+			no_solution_slide = no_solution_slide + 1;
 			puzzles.add(grid);
 		
 		}
@@ -460,16 +464,10 @@ public class Puzzle {
 		for (int index = 0; index < quote_array.length; index++) {
 			
 			HSLFSlide slide2 = ppt.createSlide();
-	
-			createTitle(slide2); //create template for slide2: puzzle solution
+			String title_name = "Puzzle";
+			createTitle(slide2, title_name, 200, 60); //create template for slide2: puzzle solution
 			//createFooter(slide, name);
 			createPic(ppt, slide2); //add logo picture
-		
-			//create text box lines   
-			createLine(slide2, 220, 5, 50, 0); //top line
-			createLine(slide2, 270, 5, 0, 50); //right line
-			createLine(slide2, 220, 55, 50, 0); //bottom line
-			createLine(slide2, 220, 5, 0, 50); //left line
 
 			HSLFTable table2 = slide2.createTable(num_row, num_column); //create a table of n rows and n columns
 			getLabels(slide2, num_row, num_column); //create labels for slide2
@@ -494,20 +492,38 @@ public class Puzzle {
 			}
 		
 			for (int i = 0; i < num_column; i++) {
-				table2.setColumnWidth(i, row_width);
+				table2.setColumnWidth(i, table_width);
 			}
 	
 			for (int i = 0; i < num_row; i++) {
-				table2.setRowHeight(i, row_height);
+				table2.setRowHeight(i, table_height);
 			}
 			
-			createSlideNum(slide2, no_solution_slide);
+			if (solution_slide >= 100) {
+				createSlideNum(slide2, solution_slide, 65, 49);
+				
+				//create text box lines   
+				createLine(slide2, 220, 5, 65, 0); //top line
+				createLine(slide2, 285, 5, 0, 50); //right line
+				createLine(slide2, 220, 55, 65, 0); //bottom line
+				createLine(slide2, 220, 5, 0, 50); //left line
+			}
+			else {
+				createSlideNum(slide2, solution_slide, 49, 49);
+				
+				//create text box lines   
+				createLine(slide2, 220, 5, 50, 0); //top line
+				createLine(slide2, 270, 5, 0, 50); //right line
+				createLine(slide2, 220, 55, 50, 0); //bottom line
+				createLine(slide2, 220, 5, 0, 50); //left line
+			}
 			
 			table2.moveTo(tableMoveX, tableMoveY);
-			no_solution_slide = no_solution_slide + 1; 
+			solution_slide = solution_slide + 1; 
 			
 		}
 		
+		//reorder slides so solution slides goes on the bottom half
 		int size = quote_array.length;
 		int o = 1;
 		int n = quote_array.length + 1;
