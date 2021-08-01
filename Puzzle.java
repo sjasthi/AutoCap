@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -195,46 +196,68 @@ public class Puzzle {
 	}
 	
 	//use for empty slides in order to store puzzles and not be out of bound 
-	public static char[][] genGrid(String filler, int num_row, int num_column) {
+	public static String[][] genGrid(String filler, int num_row, int num_column) throws UnsupportedEncodingException, SQLException {
 		Random rand = new Random();
-		char[][] grid = new char[num_row][num_column];
 		
-		int size = filler.length();
+		API api = new API();
+		
+		//get filler characters and store in an array
+		ArrayList<String> filler_array1 = api.getFillers(filler);
+		String[] filler_array = filler_array1.toArray(new String[0]);
+		
+		String[][] grid = new String[num_row][num_column];
 		
 		for (int i = 0; i < num_row; i++) {		
-		    for (int j = 0; j < num_column; j++) {
-		    	grid[i][j] = filler.charAt(rand.nextInt(size));
-		    }
+		   for (int j = 0; j < num_column; j++) {
+			   int x = rand.nextInt(filler_array.length);
+			   grid[i][j] = filler_array[x];
+		   }
 		}
 		
 		return grid;
 	}
-	
-	public static char[][] genGrid(HSLFTable table, int num_row, int num_column, char[] phraseChars1, boolean solution, String filler) {
+
+	public static  String[][] genGrid(HSLFTable table, int num_row, int num_column, char[] phraseChars1, boolean solution, String filler, String quote) throws UnsupportedEncodingException, SQLException {
 		Random rand = new Random();
 		
-		//String values = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		API api = new API();
 		
-		char[][] grid = new char[num_row][num_column];
+		//process phrase through logicalChars API and store in an array
+		ArrayList<String> list_quotes1 = api.parseLogicalChars(quote);
+		String[] quote_char_array = list_quotes1.toArray(new String[0]);
 		
-		int size = filler.length();
+		//get filler characters and store in an array
+		ArrayList<String> filler_array1 = api.getFillers(filler);
+		String[] filler_array = filler_array1.toArray(new String[0]);
+		
+		String[][] grid = new String[num_row][num_column];
 		
 		for (int i = 0; i < num_row; i++) {		
-		    for (int j = 0; j < num_column; j++) {
-		    	grid[i][j] = filler.charAt(rand.nextInt(size));
-		    }
+		   for (int j = 0; j < num_column; j++) {
+			   int x = rand.nextInt(filler_array.length);
+			   grid[i][j] = filler_array[x];
+		   }
 		}
 		
 		char[] phraseChars = phraseChars1; 
 		int[][] locations = chooseLocations(num_row, num_column, phraseChars);
 		
-		for (int i = 0; i < phraseChars.length; i++) {
+		char[] charArray = new char[quote_char_array.length];
+		
+		for (int i = 0; i < quote_char_array.length; i++) {
+			String string_char = quote_char_array[i];
+			char first_char = string_char.charAt(0);
+			charArray[i] = first_char;
+		}
+	
+		for (int i = 0; i < charArray.length; i++) {
 			int x = locations[i][0]; 
 			int y = locations[i][1];
-			grid[x][y] = phraseChars[i];
+			grid[x][y] = quote_char_array[i];
 			String char_string = String.valueOf(grid[x][y]);
 			HSLFTableCell cell = table.getCell(x, y);
 			cell.setText(char_string);
+			
 			if (solution == true) {
 				cell.setFillColor(Color.green); //set solution to color green 
 			}
@@ -402,15 +425,7 @@ public class Puzzle {
 			list_quotes = Source.getQuotesFromtxt(txtfile_name);
 		}
 		
-		API api = new API();
-		
-		//process phrase through logicalChars API and store in an array
-		ArrayList<String> list_quotes1 = api.parseLogicalChars(list_quotes);
-		String[] quote_array = list_quotes1.toArray(new String[0]); //turn ArrayList into Array of all the strings
-		
-		//get filler characters and store in an array
-		ArrayList<String> filler_array1 = api.getFillers(list_quotes);
-		String[] filler_array = filler_array1.toArray(new String[0]);
+		String[] quote_array = list_quotes.toArray(new String[0]); //convert arraylist to array
 		
 		int no_solution_slide = 1;
 		int solution_slide = 1;
@@ -418,7 +433,7 @@ public class Puzzle {
 		int num_column = 18; //width of 18
 		int num_row = 14; //height of 14
 		
-		ArrayList<char[][]> puzzles = new ArrayList<char[][]>();
+		ArrayList<String[][]> puzzles = new ArrayList<String[][]>(); //to store grid in order to use later
 		
 		//create power-point
 		HSLFSlideShow ppt = new HSLFSlideShow();
@@ -434,9 +449,9 @@ public class Puzzle {
 		
 				HSLFTable table = slide.createTable(num_row, num_column); //create a table of 12 rows and 16 columns
 				getLabels(slide, num_row, num_column); //create labels for slide1
-			
+				
 				char[] phraseChars = quote_array[index].toCharArray(); 
-				char grid[][] = genGrid(table, num_row, num_column, phraseChars, true, filler_array[index]); //call method to generate Grid
+				String grid[][] = genGrid(table, num_row, num_column, phraseChars, true, quote_array[index], quote_array[index]); //call method to generate Grid
 		
 				for(int i = 0; i < num_column; i++) {
 					for(int j = 0; j < num_row; j++) {
@@ -510,7 +525,7 @@ public class Puzzle {
 					createLine(slide, 220, 5, 0, 50); //left line
 				}
 				
-				char grid[][] = genGrid(filler_array[index], num_row, num_column);
+				String grid[][] = genGrid(quote_array[index], num_row, num_column);
 				puzzles.add(grid);
 			}
 			
@@ -528,25 +543,24 @@ public class Puzzle {
 				HSLFTable table2 = slide2.createTable(num_row, num_column); //create a table of n rows and n columns
 				getLabels(slide2, num_row, num_column); //create labels for slide2
 				
-				
-					char grid[][] = puzzles.get(index);
-		
-					for(int i = 0; i < num_column; i++) {
-						for(int j = 0; j < num_row; j++) {
-							//writes values from puzzle into tables
-							String char_string = String.valueOf(grid[j][i]);
-							HSLFTableCell cell1 = table2.getCell(j, i);
-							cell1.setText(char_string);
+				String grid[][] = puzzles.get(index);
+	
+				for(int i = 0; i < num_column; i++) {
+					for(int j = 0; j < num_row; j++) {
+						//writes values from puzzle into tables
+						String char_string = String.valueOf(grid[j][i]);
+						HSLFTableCell cell1 = table2.getCell(j, i);
+						cell1.setText(char_string);
 					
-							//formats each cell on slide 2
-							setBorders(cell1);
-							HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
-							rt1.setFontFamily("Arial");
-							rt1.setFontSize(10.);
-							cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
-							cell1.setHorizontalCentered(true);
-						}
+						//formats each cell on slide 2
+						setBorders(cell1);
+						HSLFTextRun rt1 = cell1.getTextParagraphs().get(0).getTextRuns().get(0);
+						rt1.setFontFamily("Arial");
+						rt1.setFontSize(10.);
+						cell1.setVerticalAlignment(VerticalAlignment.MIDDLE);
+						cell1.setHorizontalCentered(true);
 					}
+				}
 				
 				for (int i = 0; i < num_column; i++) {
 					table2.setColumnWidth(i, table_width);

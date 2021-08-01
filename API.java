@@ -1,5 +1,7 @@
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
@@ -38,78 +40,60 @@ public class API {
 		}
 	}
 	
-	public ArrayList<String> parseLogicalChars(ArrayList<String> quote_array_db) throws SQLException, UnsupportedEncodingException {
-		
-		String[] quote_arraydb = quote_array_db.toArray(new String[0]);
+	public ArrayList<String> parseLogicalChars(String quote) throws SQLException, UnsupportedEncodingException {
 		
 		ArrayList<String> quote_array = new ArrayList<String>();
-		
-		for (int i = 0; i < quote_arraydb.length; i++) {
-			String lang = chooseLang(quote_arraydb[i]);
-			String URL = "http://indic-wp.thisisjava.com/api/getLogicalChars.php?string=" + URLEncoder.encode(quote_arraydb[i], "UTF-8") + "&language='" + lang + "'";
-			String newURL = URL.replaceAll(" ", "%20");
+	
+		String lang = chooseLang(quote);
+		String URL = "http://indic-wp.thisisjava.com/api/getLogicalChars.php?string=" + URLEncoder.encode(quote, "UTF-8") + "&language='" + lang + "'";
+		String newURL = URL.replaceAll(" ", "%20");
         
-			Client client = Client.create();
-        	WebResource resource = client.resource(newURL);
-        	String response = resource.get(String.class);
+		Client client = Client.create();
+        WebResource resource = client.resource(newURL);
+        String response = resource.get(String.class);
         
-        	int index = response.indexOf("{");
-        	response = response.substring(index);
-        	JSONObject myObject = new JSONObject(response.trim()); 
+        int index = response.indexOf("{");
+        response = response.substring(index);
+        JSONObject myObject = new JSONObject(response); 
         	
-        	System.out.println(response);
+        System.out.println(response);
         	
-        	JSONArray jsonArray = myObject.getJSONArray("data");
-        
-        	ArrayList<String> temp_array = new ArrayList<String>();
+        JSONArray jsonArray = myObject.getJSONArray("data");
             
-        	for (int j = 0; j < jsonArray.length(); j++) {
-        		temp_array.add(jsonArray.getString(j));
-        	}
-        	
-        	String quote = String.join("", temp_array);
-        	quote_array.add(quote);
-		}
+        for (int j = 0; j < jsonArray.length(); j++) {
+        	quote_array.add(jsonArray.getString(j));
+        }
 		
+        System.out.println(quote_array);
 		return quote_array;
 	}
 	
-	public ArrayList<String> getFillers (ArrayList<String> quote_array_db) throws SQLException, UnsupportedEncodingException {
-		
-		String[] quote_arraydb = quote_array_db.toArray(new String[0]);
+	public ArrayList<String> getFillers (String quote) throws SQLException, UnsupportedEncodingException {
 		
 		ArrayList<String> filler_array = new ArrayList<String>();
-		
-		for (int i = 0; i < quote_arraydb.length; i++) {
-			String lang = chooseLang(quote_arraydb[i]);
-			String URL = "https://indic-wp.thisisjava.com/api/getFillerCharacters.php?count=160&type=CONSONANT&language=" + lang;
-			String newURL = URL.replaceAll(" ", "%20");
+	
+		String lang = chooseLang(quote);
+		String URL = "https://indic-wp.thisisjava.com/api/getFillerCharacters.php?count=160&type=CONSONANT&language=" + lang;
+		String newURL = URL.replaceAll(" ", "%20");
         
-			Client client = Client.create();
-        	WebResource resource = client.resource(newURL);
-        	String response = resource.get(String.class);
+		Client client = Client.create();
+        WebResource resource = client.resource(newURL);
+        String response = resource.get(String.class);
         
-        	int index = response.indexOf("{");
-        	response = response.substring(index);
-        	JSONObject myObject = new JSONObject(response.trim()); 
+        int index = response.indexOf("{");
+        response = response.substring(index);
+        JSONObject myObject = new JSONObject(response.trim()); 
         	
-        	System.out.println(response);
+        System.out.println(response);
         	
-        	JSONArray jsonArray = myObject.getJSONArray("data");
-        
-        	ArrayList<String> temp_array = new ArrayList<String>();
+        JSONArray jsonArray = myObject.getJSONArray("data");
             
-        	for (int j = 0; j < jsonArray.length(); j++) {
-        		temp_array.add(jsonArray.getString(j));
-        	}
-        	
-        	String quote = String.join("", temp_array);
-        	filler_array.add(quote);
-		}
+        for (int j = 0; j < jsonArray.length(); j++) {
+        	filler_array.add(jsonArray.getString(j));
+        }
 		
 		return filler_array;
 	}
-
 
 }
 
