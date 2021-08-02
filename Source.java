@@ -49,7 +49,7 @@ public class Source {
 		try {
 			connect = DriverManager.getConnection(url, username, password);
 
-			System.out.println("Connected!");
+			System.out.println("Connected to Database!\n");
 
 			Statement statement = connect.createStatement();
 
