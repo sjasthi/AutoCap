@@ -10,19 +10,10 @@ import org.json.JSONObject;
 
 public class API {
 	
-	public String chooseLang(String quote) {
-		if (quote.matches(".*[a-zA-Z]+.*")) {
-			return "English";
-		}
-		else {
-			return "Telugu";
-		}
-	}
-	
 	public int getLength(String quote) throws UnsupportedEncodingException {
-
+		
 		String lang = chooseLang(quote);
-
+		
 		String URL = "http://indic-wp.thisisjava.com/api/getLength.php?string=" + URLEncoder.encode(quote, "UTF-8") + "&language='" + lang + "'";
 		String newURL = URL.replaceAll(" ", "%20");
     
@@ -41,6 +32,15 @@ public class API {
     		return q_length;
 	}
 	
+	public String chooseLang(String quote) {
+		if (quote.matches(".*[a-zA-Z]+.*")) {
+			return "English";
+		}
+		else {
+			return "Telugu";
+		}
+	}
+	
 	public ArrayList<String> parseLogicalChars(String quote) throws SQLException, UnsupportedEncodingException {
 		
 		ArrayList<String> quote_array = new ArrayList<String>();
@@ -50,14 +50,12 @@ public class API {
 		String newURL = URL.replaceAll(" ", "%20");
         
 		Client client = Client.create();
-        	WebResource resource = client.resource(newURL);
+       		WebResource resource = client.resource(newURL);
         	String response = resource.get(String.class);
         
-      	  	int index = response.indexOf("{");
-        	response = response.substring(index);
-        	JSONObject myObject = new JSONObject(response); 
-        	
-       		 System.out.println(response);
+       		int index = response.indexOf("{");
+       	 	response = response.substring(index);
+       	 	JSONObject myObject = new JSONObject(response); 
         	
         	JSONArray jsonArray = myObject.getJSONArray("data");
             
@@ -77,20 +75,18 @@ public class API {
 		String newURL = URL.replaceAll(" ", "%20");
         
 		Client client = Client.create();
-        	WebResource resource = client.resource(newURL);
+       		WebResource resource = client.resource(newURL);
         	String response = resource.get(String.class);
         
-        	int index = response.indexOf("{");
+       		int index = response.indexOf("{");
         	response = response.substring(index);
-        	JSONObject myObject = new JSONObject(response.trim()); 
-        		
-        	System.out.println(response);
+       		JSONObject myObject = new JSONObject(response.trim()); 
         	
-        	JSONArray jsonArray = myObject.getJSONArray("data");
+       		JSONArray jsonArray = myObject.getJSONArray("data");
             
        		for (int j = 0; j < jsonArray.length(); j++) {
         		filler_array.add(jsonArray.getString(j));
-        	}
+       		}
 		
 		return filler_array;
 	}
