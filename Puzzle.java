@@ -151,12 +151,12 @@ public class Puzzle {
 		String[] side_label = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16",
 				"17", "18", "19", "20", "21", "22", "23", "24", "25", "26" };
 		
-		//create labels for 1st slide
+		//create labels
 		HSLFTable top_row = slide.createTable(1, num_column);
 		HSLFTable side_row = slide.createTable(num_row, 1);
 		
 		for (int i = 0; i < num_row; i++) {
-			//side column labels for slide 1
+			//side column labels
 			HSLFTableCell side_cell = side_row.getCell(i, 0);
 			side_cell.setText(side_label[i]);
 			setBorders(side_cell);
@@ -168,7 +168,7 @@ public class Puzzle {
 			side_cell.setHorizontalCentered(true);
 			
 			for (int j = 0; j < num_column; j++) {
-				//top row labels for slide 1
+				//top row labels
 				HSLFTableCell top_cell = top_row.getCell(0, j);
 				top_cell.setText(top_label[j]);
 				setBorders(top_cell);
@@ -368,7 +368,6 @@ public class Puzzle {
 		return locations;
 	}
 	
-	
 	public static boolean legitimate(int[][] locations, int[] newLocation, int num_row, int num_column) {
 		//check if new location out of bounds
 		if (newLocation[0] < 0 || newLocation[0] >= num_row || newLocation[1] < 0 || newLocation[1] >= num_column) {
@@ -433,7 +432,10 @@ public class Puzzle {
 		
 		//mass generate slides for a quote starting at index 0
 		for (int index = 0; index < quote_array.length; index++) {
-			if (quote_array[index].length() < 80) {
+	
+			int length = api.getLength(quote_array[index]);
+
+			if (length < 80) {
 				HSLFSlide slide = ppt.createSlide();
 				String title_name = "Puzzle Solution";
 				createTitle(slide, title_name, 320, 60); //create template for slide1: puzzle no solution
@@ -443,8 +445,6 @@ public class Puzzle {
 				HSLFTable table = slide.createTable(num_row, num_column); //create a table of 12 rows and 16 columns
 				getLabels(slide, num_row, num_column); //create labels for slide1
 				
-				int length = api.getLength(quote_array[index]);
-						
 				String grid[][] = genGrid(table, num_row, num_column, length, true, quote_array[index], quote_array[index]); //call method to generate Grid
 		
 				for(int i = 0; i < num_column; i++) {
@@ -527,7 +527,10 @@ public class Puzzle {
 		}
 		
 		for (int index = 0; index < quote_array.length; index++) {
-			if (quote_array[index].length() < 80) {
+			
+			int length = api.getLength(quote_array[index]);
+			
+			if (length < 80) {
 				HSLFSlide slide2 = ppt.createSlide();
 				String title_name = "Puzzle";
 				createTitle(slide2, title_name, 200, 60); //create template for slide2: puzzle solution
@@ -634,7 +637,3 @@ public class Puzzle {
 		ppt.close();
 	}
 }
-
-
-
-
