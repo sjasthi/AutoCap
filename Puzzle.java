@@ -225,10 +225,12 @@ public class Puzzle {
 		//process phrase through logicalChars API and store in an array
 		ArrayList<String> list_quotes1 = api.parseLogicalChars(quote);
 		String[] quote_char_array = list_quotes1.toArray(new String[0]);
+		System.out.println("Processing phrase '" + quote + "' into API...");
 		
 		//get filler characters and store in an array
 		ArrayList<String> filler_array1 = api.getFillers(filler);
 		String[] filler_array = filler_array1.toArray(new String[0]);
+		System.out.println("Getting fillers from API to fill the grid...\n");
 		
 		String[][] grid = new String[num_row][num_column];
 		
@@ -435,7 +437,7 @@ public class Puzzle {
 	
 			int length = api.getLength(quote_array[index]);
 
-			if (length < 80) {
+			if (length < 60) {
 				HSLFSlide slide = ppt.createSlide();
 				String title_name = "Puzzle Solution";
 				createTitle(slide, title_name, 320, 60); //create template for slide1: puzzle no solution
@@ -530,7 +532,7 @@ public class Puzzle {
 			
 			int length = api.getLength(quote_array[index]);
 			
-			if (length < 80) {
+			if (length < 60) {
 				HSLFSlide slide2 = ppt.createSlide();
 				String title_name = "Puzzle";
 				createTitle(slide2, title_name, 200, 60); //create template for slide2: puzzle solution
@@ -632,8 +634,11 @@ public class Puzzle {
 		out.close();
 		
 		System.out.println("Puzzle is created: " + f);
+		System.out.println("Loading...");
 		
 		Desktop.getDesktop().browse(f.toURI());
+		System.out.println("Done.");
+		
 		ppt.close();
 	}
 }
