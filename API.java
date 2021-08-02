@@ -10,6 +10,15 @@ import org.json.JSONObject;
 
 public class API {
 	
+	public String chooseLang(String quote) {
+		if (quote.matches(".*[a-zA-Z]+.*")) {
+			return "English";
+		}
+		else {
+			return "Telugu";
+		}
+	}
+	
 	public int getLength(String quote) throws UnsupportedEncodingException {
 
 		String lang = chooseLang(quote);
@@ -30,15 +39,6 @@ public class API {
     		int q_length = length.intValue();
 
     		return q_length;
-	}
-	
-	public String chooseLang(String quote) {
-		if (quote.matches(".*[a-zA-Z]+.*")) {
-			return "English";
-		}
-		else {
-			return "Telugu";
-		}
 	}
 	
 	public ArrayList<String> parseLogicalChars(String quote) throws SQLException, UnsupportedEncodingException {
