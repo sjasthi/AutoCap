@@ -28,7 +28,7 @@ import org.apache.poi.sl.usermodel.VerticalAlignment;
 public class Puzzle {
 	
 	/*
-	Notes for default table size of 12x16:
+	Notes for default table size of 16x12:
 		Good table size:
 		table_width = 30
 		table_height = 30
