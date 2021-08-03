@@ -422,6 +422,7 @@ public class Puzzle {
 		int no_solution_slide = 1;
 		int solution_slide = 1;
 		
+		//16x12 default grid size
 		int num_column = 16; //columns
 		int num_row = 12; //rows
 		
