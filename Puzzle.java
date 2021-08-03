@@ -422,8 +422,8 @@ public class Puzzle {
 		int no_solution_slide = 1;
 		int solution_slide = 1;
 		
-		int num_column = 18; //width of 18
-		int num_row = 14; //height of 14
+		int num_column = 16; //columns
+		int num_row = 12; //rows
 		
 		ArrayList<String[][]> puzzles = new ArrayList<String[][]>(); //to store grid in order to use later
 		
@@ -437,7 +437,7 @@ public class Puzzle {
 	
 			int length = api.getLength(quote_array[index]);
 
-			if (length < 60) {
+			if (length < 70) {
 				HSLFSlide slide = ppt.createSlide();
 				String title_name = "Puzzle Solution";
 				createTitle(slide, title_name, 320, 60); //create template for slide1: puzzle no solution
@@ -532,7 +532,7 @@ public class Puzzle {
 			
 			int length = api.getLength(quote_array[index]);
 			
-			if (length < 60) {
+			if (length < 70) {
 				HSLFSlide slide2 = ppt.createSlide();
 				String title_name = "Puzzle";
 				createTitle(slide2, title_name, 200, 60); //create template for slide2: puzzle solution
