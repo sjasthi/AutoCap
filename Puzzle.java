@@ -39,8 +39,8 @@ public class Puzzle {
 	
 	//side_label_width should stay at 30 at all times in order to not overlap with table
 	//or else table X and Y coordinates will have to be adjusted.
-	private final static int tableMoveX = 115; 
-	private final static int tableMoveY = 105; 
+	private final static int tableMoveX = 140; 
+	private final static int tableMoveY = 130; 
 	private final static int table_width = 30;
 	private final static int table_height = 30;
 	private final static int side_label_width = 30;
