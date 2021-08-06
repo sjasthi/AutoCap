@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-
 public class Source {
 
 	/**
@@ -22,12 +21,21 @@ public class Source {
 			File file = new File(file_name);
 			Scanner reader = new Scanner(file);
 			while (reader.hasNextLine()) {
-				String storethis = reader.nextLine();
-				String[] array = storethis.split(",");
-				String quote1 = array[3];
-				String quote = quote1.replaceAll("\\s", "");
-				quote = quote.replaceAll("[\\p{Punct}]", "");
-				list_quotes.add(quote);
+				String line = reader.nextLine();
+				String[] array = line.split(",");
+				String quote = array[3];
+				if (line.contains("\"")) {
+					String[] array2 = line.split("\"");
+					quote = array2[1];
+					quote = quote.replaceAll("\\s",""); 
+					quote = quote.replaceAll("[\\p{Punct}]", "");
+					list_quotes.add(quote);
+				}
+				else {
+					quote = quote.replaceAll("\\s",""); 
+					quote = quote.replaceAll("[\\p{Punct}]", "");
+					list_quotes.add(quote);
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
