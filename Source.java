@@ -8,8 +8,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
 public class Source {
-	
+
+	/**
+	 * @author AutoCap
+	 * This method loops through the given CSV file and retrieves all quotes from the from it to then return an arraylist back to the Puzzle class.
+	 * 
+	 */
 	public static ArrayList<String> getQuotesFromtxt(String file_name) {
 		ArrayList<String> list_quotes = new ArrayList<String>();
 		try {
@@ -19,29 +25,35 @@ public class Source {
 				String storethis = reader.nextLine();
 				String[] array = storethis.split(",");
 				String quote1 = array[3];
-				String quote = quote1.replaceAll("\\s",""); 
+				String quote = quote1.replaceAll("\\s", "");
 				quote = quote.replaceAll("[\\p{Punct}]", "");
 				list_quotes.add(quote);
 			}
-		}
-		catch(IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return list_quotes;
 	}
+
+	/**
+	 * @author AutoCap
+	 * This method establishes a connection with the database and inquires the user for two parameters that must be provide for the
+	 * script to work properly. Once completed the method returns an arraylist back to the Puzzle class.
+	 *
+	 */
 	
 	public static ArrayList<String> connect_to_db() throws SQLException {
 
 		ArrayList<String> phrase_from_db = new ArrayList<String>();
 
 		Connection connect = null;
-		
-		String database = "quotes_db";
+
+		String database = "quotes_db_2";
 		String url = "jdbc:mysql://localhost/" + database;
 		String username = "root";
 		String password = "";
-		
+
 		Puzzle user = new Puzzle();
 		int start_ID = user.getStartID();
 		int end_ID = user.getEndID();
@@ -58,17 +70,15 @@ public class Source {
 
 			while (results.next()) {
 				String quote_temp = results.getString("quote");
-				String quote = quote_temp.replaceAll("\\s",""); 
+				String quote = quote_temp.replaceAll("\\s", "");
 				quote = quote.replaceAll("[\\p{Punct}]", "");
 				phrase_from_db.add(quote);
 			}
-			
-		}
-		catch (Exception ex) {
+
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		
+
 		return phrase_from_db;
 	}
 }
-

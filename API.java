@@ -8,7 +8,14 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+
 public class API {
+	
+	/**
+	 * @author AutoCap
+	 * This method passes a quote to the API which then returns the quote's length. After retrieving the length we pass it back into the Puzzle
+	 * class to be used in the grid generation.
+	 */
 	
 	public int getLength(String quote) throws UnsupportedEncodingException {
 		
@@ -32,6 +39,12 @@ public class API {
     		return q_length;
 	}
 	
+	/**
+	 * @author AutoCap
+	 * This method checks the given quote and determines whether it is English or Telugu, it then passes the language into the 
+	 * other methods for them to adjust accordingly.
+	 */
+	
 	public String chooseLang(String quote) {
 		if (quote.matches(".*[a-zA-Z]+.*")) {
 			return "English";
@@ -40,6 +53,12 @@ public class API {
 			return "Telugu";
 		}
 	}
+	
+	/**
+	 * @author AutoCap
+	 * This method passes the array that was retrieved from the Sources class into the given API where it is then broken down
+	 * into individual characters that will be used to generate the solution.
+	 */
 	
 	public ArrayList<String> parseLogicalChars(String quote) throws SQLException, UnsupportedEncodingException {
 		
@@ -65,6 +84,11 @@ public class API {
 	
 		return quote_array;
 	}
+	
+	/**
+	 * @author AutoCap
+	 * This method retrieves filler characters for each generated grid and returns it to the Puzzle class.
+	 */
 	
 	public ArrayList<String> getFillers (String quote) throws SQLException, UnsupportedEncodingException {
 		

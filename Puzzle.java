@@ -25,6 +25,19 @@ import org.apache.poi.sl.usermodel.TableCell.BorderEdge;
 import org.apache.poi.sl.usermodel.TextParagraph.TextAlign;
 import org.apache.poi.sl.usermodel.VerticalAlignment;
 
+
+/**
+ * @author AutoCap (Xeng Xiong and Seng Khang)
+ * The purpose of this program is to mass generate a snake puzzle in power point.
+ * There will be two slides generated for one puzzle (puzzle and solution).
+ * The program will work for CSV files and a database (myPHPadmin), parameters must be adjusted accordingly
+ * - CSV file must be located in the project folder, will only work with the given format "ID,Author,Category,Quote".
+ * - Database must be up and running, please adjust any difference in naming accordingly.
+ * - PowerPoint must be closed out before running the program else the program throws an error. 
+ * - When running the code existing files with the same name and type will be overwritten please backup any mass generated puzzle accordingly.
+ *
+ */
+
 public class Puzzle {
 	
 	/*
@@ -44,12 +57,13 @@ public class Puzzle {
 	private final static int table_width = 30;
 	private final static int table_height = 30;
 	private final static int side_label_width = 30;
+	private final static int char_limit = 100;
 	
 	private final static double table_fontSize = 15.0;
 	private final static String table_font = "Arial";
 	private final static String content_font = "Arial";
 	
-	public final static String SOURCE = "DATABASE"; //DATABASE or TEXTFILE
+	public final static String SOURCE = "TEXTFILE"; //DATABASE or TEXTFILE
 	
 	private int startID = callStartID();
 	private int endID = callEndID();
@@ -74,12 +88,23 @@ public class Puzzle {
 		return scan.nextInt();
 	}
 	
+	/**
+	 * @author AutoCap
+	 * This method sets the the color of a the cells.
+	 */
+	
 	public static void setBorders(HSLFTableCell cell) {
 		cell.setBorderColor(BorderEdge.bottom, Color.black);
 		cell.setBorderColor(BorderEdge.top, Color.black);
 		cell.setBorderColor(BorderEdge.right, Color.black);
 		cell.setBorderColor(BorderEdge.left, Color.black);
 	}
+	
+	/**
+	 * @author AutoCap
+	 * These two methods are unused, but they set the background of the power point slide
+	 * and creates a footer with the data retrieved from the database.
+	 */
 	
 	/*
 	public static void changeBackground(HSLFSlideShow ppt, HSLFSlide slide) throws IOException {
@@ -105,6 +130,11 @@ public class Puzzle {
 	}
 	*/
 	
+	/**
+	 * @author AutoCap
+	 * This method creates and controls the title text box that runs across each slide.
+	 */
+	
 	public static void createTitle(HSLFSlide slide, String title_name, int width, int height) {
 		HSLFTextBox title = slide.createTextBox();
 		HSLFTextParagraph p = title.getTextParagraphs().get(0);
@@ -118,6 +148,11 @@ public class Puzzle {
 		title.setAnchor(new Rectangle(270,5,width,height));
 	}
 	
+	/**
+	 * @author AutoCap
+	 * This method creates and controls the slide numbers that are in each slide.
+	 */
+	
 	public static void createSlideNum(HSLFSlide slide, int slide_num, int width, int height) {
 		HSLFTextBox slide_number = slide.createTextBox();
 		HSLFTextParagraph p = slide_number.getTextParagraphs().get(0);
@@ -130,12 +165,21 @@ public class Puzzle {
 		slide_number.setAnchor(new Rectangle(221,6,width,height));
 	}
 	
+	/**
+	 * @author AutoCap
+	 * This method gives the illusion of the slide number having a box with a black border.
+	 */
+	
 	public static void createLine(HSLFSlide slide, int x, int y, int width, int height) {
 		HSLFLine line = new HSLFLine();
 		line.setAnchor(new Rectangle(x,y,width,height));
 		line.setLineColor(Color.black);
 		slide.addShape(line);
 	}
+	/**
+	 * @author AutoCap
+	 * This method inserts the "logo.png" into the top left corner of every puzzle's slide.
+	 */
 	
 	public static void createPic(HSLFSlideShow ppt, HSLFSlide slide) throws IOException {
 		byte[] picture = IOUtils.toByteArray(new FileInputStream(new File("logo.png")));
@@ -143,6 +187,11 @@ public class Puzzle {
 		HSLFPictureShape pic_shape = slide.createPicture(pd); 
 		pic_shape.setAnchor(new Rectangle(0, 0, 174, 65));
 	}
+	
+	/**
+	 * @author AutoCap
+	 * This method generates and controls the top and side labels of the grid. 
+	 */
 	
 	public static void getLabels(HSLFSlide slide, int num_row, int num_column) {
 		String[] top_label = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R",
@@ -194,8 +243,12 @@ public class Puzzle {
 		top_row.moveTo(tableMoveX, tableMoveY - 20); // y - 20 to match table
 		side_row.moveTo(tableMoveX - 30, tableMoveY); // x - 30 to match table
 	}
-	
-	//use for empty slides in order to store puzzles and not be out of bound 
+
+	/**
+	 * @author AutoCap
+	 * This method ensures that the reordering of slides works.
+	 * use for empty slides in order to store puzzles and not be out of bound
+	 */
 	public static String[][] genGrid(String filler, int num_row, int num_column) throws UnsupportedEncodingException, SQLException {
 		Random rand = new Random();
 		
@@ -258,6 +311,12 @@ public class Puzzle {
 		
 		return grid;
 	}
+	
+	/**
+	 * @author AutoCap
+	 * This method is the logic behind where each of the letters in the solution is placed on the grid itself.
+	 * 
+	 */
 	
 	public static int[][] chooseLocations(int num_row, int num_column, int length) {
 		boolean legitimatePlacement = false;
@@ -423,7 +482,7 @@ public class Puzzle {
 		int solution_slide = 1;
 		
 		//16x12 default grid size
-		int num_column = 16; //columns
+		int num_column = 20; //columns
 		int num_row = 12; //rows
 		
 		ArrayList<String[][]> puzzles = new ArrayList<String[][]>(); //to store grid in order to use later
@@ -438,7 +497,7 @@ public class Puzzle {
 	
 			int length = api.getLength(quote_array[index]);
 
-			if (length < 70) {
+			if (length < char_limit) {
 				HSLFSlide slide = ppt.createSlide();
 				String title_name = "Puzzle Solution";
 				createTitle(slide, title_name, 320, 60); //create template for slide1: puzzle no solution
@@ -533,7 +592,7 @@ public class Puzzle {
 			
 			int length = api.getLength(quote_array[index]);
 			
-			if (length < 70) {
+			if (length < char_limit) {
 				HSLFSlide slide2 = ppt.createSlide();
 				String title_name = "Puzzle";
 				createTitle(slide2, title_name, 200, 60); //create template for slide2: puzzle solution
