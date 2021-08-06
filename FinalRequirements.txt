@@ -1,0 +1,33 @@
+/**
+	 * This method prints a summary table of
+	 * grid width, grid height, maximum length
+	 * to inform the user about the system limits
+	 */
+	
+	public static void printSystemLimits()
+	{
+		
+	}
+	
+	/**
+	 * THis method returns a list of quotes that can not be fit in the given grid width and height
+	 */
+	public ArrayList<String> getQuotesThatCannotBeFit(int gird_width, int grid_height, String file_name)
+	{
+		
+	}
+	
+	/**
+	 * THis method returns possible grid sizes to accommodate a given set of quotes
+	 * 
+	 */
+	public ArrayList<String> getQuotesThatCannotBeFit(String file_name)
+	{
+		
+		//. The maximum length of a quote in this collection is 98
+		// To accommodate this length, you need to go with the following grid sizes
+		// grid_width = x
+		// grid_height = y
+	}
+	
+	
