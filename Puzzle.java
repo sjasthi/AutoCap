@@ -56,13 +56,15 @@ public class Puzzle {
 	private final static int tableMoveY = 130; 
 	private final static int table_width = 30;
 	private final static int table_height = 30;
-	private final static int side_label_width = 30;
-	private final static int char_limit = 100;
-	
+	private final static int side_label_width = 30
 	private final static double table_fontSize = 15.0;
 	private final static String table_font = "Arial";
 	private final static String content_font = "Arial";
-	
+
+	//16x12 default grid size
+	private static int num_column = 20; //columns
+	private static int num_row = 18; //rows
+	private static int char_limit = 100; //max length limit
 	public final static String SOURCE = "TEXTFILE"; //DATABASE or TEXTFILE
 	
 	private int startID = callStartID();
@@ -486,10 +488,6 @@ public class Puzzle {
 		
 		int no_solution_slide = 1;
 		int solution_slide = 1;
-		
-		//16x12 default grid size
-		int num_column = 20; //columns
-		int num_row = 12; //rows
 		
 		ArrayList<String[][]> puzzles = new ArrayList<String[][]>(); //to store grid in order to use later
 		
