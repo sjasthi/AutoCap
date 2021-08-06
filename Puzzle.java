@@ -429,6 +429,12 @@ public class Puzzle {
 		return locations;
 	}
 	
+	/**
+	 * @author AutoCap
+	 * This method is used to determine if the solution meets the requirement to form a snake.
+	 * 
+	 */
+	
 	public static boolean legitimate(int[][] locations, int[] newLocation, int num_row, int num_column) {
 		//check if new location out of bounds
 		if (newLocation[0] < 0 || newLocation[0] >= num_row || newLocation[1] < 0 || newLocation[1] >= num_column) {
