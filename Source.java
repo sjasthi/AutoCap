@@ -51,30 +51,24 @@ public class Source {
 	 *
 	 */
 	
-	public static ArrayList<String> connect_to_db() throws SQLException {
+	public static ArrayList<String> connect_to_db(String statementExe) throws SQLException {
 
 		ArrayList<String> phrase_from_db = new ArrayList<String>();
 
 		Connection connect = null;
 
-		String database = "quotes_db_2";
+		String database = "quotes_db";
 		String url = "jdbc:mysql://localhost/" + database;
 		String username = "root";
 		String password = "";
-
-		Puzzle user = new Puzzle();
-		int start_ID = user.getStartID();
-		int end_ID = user.getEndID();
-
+		
 		try {
 			connect = DriverManager.getConnection(url, username, password);
-
-			System.out.println("Connected to Database!\n");
 
 			Statement statement = connect.createStatement();
 
 			ResultSet results = statement
-					.executeQuery("SELECT quote FROM quote_table WHERE id BETWEEN " + start_ID + " AND " + end_ID);
+					.executeQuery(statementExe);
 
 			while (results.next()) {
 				String quote_temp = results.getString("quote");
