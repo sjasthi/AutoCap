@@ -25,7 +25,6 @@ import org.apache.poi.sl.usermodel.TableCell.BorderEdge;
 import org.apache.poi.sl.usermodel.TextParagraph.TextAlign;
 import org.apache.poi.sl.usermodel.VerticalAlignment;
 
-
 /**
  * @author AutoCap (Xeng Xiong and Seng Khang)
  * The purpose of this program is to mass generate a snake puzzle in power point.
@@ -56,19 +55,23 @@ public class Puzzle {
 	private final static int tableMoveY = 130; 
 	private final static int table_width = 30;
 	private final static int table_height = 30;
-	private final static int side_label_width = 30
+	private final static int side_label_width = 30;
 	private final static double table_fontSize = 15.0;
 	private final static String table_font = "Arial";
 	private final static String content_font = "Arial";
 
 	//16x12 default grid size
-	private static int num_column = 20; //columns
-	private static int num_row = 18; //rows
-	private static int char_limit = 100; //max length limit
-	public final static String SOURCE = "TEXTFILE"; //DATABASE or TEXTFILE
+	private static int num_column = 16; //default columns
+	private static int num_row = 12; //default rows
+	private static int char_limit = 74; //max phrase length for default grid size
+	public static String SOURCE = "DATABASE"; //DATABASE or TEXTFILE
 	
-	private int startID = callStartID();
-	private int endID = callEndID();
+	private int startID;
+	private int endID;
+	
+	public int getCharLimit(){
+		return char_limit;
+	}
 	
 	public int getStartID() {
 		return startID;
@@ -78,16 +81,20 @@ public class Puzzle {
 		return endID;
 	}
 	
-	public int callStartID() {
-		Scanner scan = new Scanner(System.in);
-		System.out.println("Enter the starting ID: ");
-		return scan.nextInt();
+	public void setStartID(int startID) {
+		this.startID = startID;
 	}
 	
-	public int callEndID() {
-		Scanner scan = new Scanner(System.in);
-		System.out.println("Enter the ending ID: ");
-		return scan.nextInt();
+	public void setEndID(int endID) {
+		this.endID = endID;
+	}
+	
+	public int getNumColumn() {
+		return num_column;
+	}
+	
+	public int getNumRow() {
+		return num_row;
 	}
 	
 	/**
@@ -251,6 +258,7 @@ public class Puzzle {
 	 * This method ensures that the reordering of slides works.
 	 * use for empty slides in order to store puzzles and not be out of bound
 	 */
+	
 	public static String[][] genGrid(String filler, int num_row, int num_column) throws UnsupportedEncodingException, SQLException {
 		Random rand = new Random();
 		
@@ -470,19 +478,14 @@ public class Puzzle {
 		return new_loc;
 	}
 	
-	public static void main(String[] args) throws IOException, SQLException {
-		
+	/**
+	 * @author AutoCap
+	 * This method is used to process all the quotes and generate the Power-Point with puzzle and solution puzzle slides.
+	 * 
+	 */
+	
+	public static void genPowerPoint(ArrayList<String> list_quotes) throws IOException, SQLException {
 		File f = new File("Puzzle.ppt");
-		String txtfile_name = "quotes_table.csv";
-		
-		ArrayList<String> list_quotes = new ArrayList<String>();;
-		
-		if (SOURCE.equalsIgnoreCase("DATABASE")) {
-			list_quotes = Source.connect_to_db();
-		}
-		else {
-			list_quotes = Source.getQuotesFromtxt(txtfile_name);
-		}
 		
 		String[] quote_array = list_quotes.toArray(new String[0]); //convert arraylist to array
 		
@@ -704,5 +707,113 @@ public class Puzzle {
 		System.out.println("Done.");
 		
 		ppt.close();
+	}
+	
+	public static void main(String[] args) throws IOException, SQLException {
+		
+		Scanner scan = new Scanner(System.in);
+		
+		String txtfile_name = "quotes_table.csv";
+		
+		Puzzle user = new Puzzle();
+		
+		Analyzer analyzer = new Analyzer();
+		int max_length = analyzer.getMaxLength(txtfile_name);
+		System.out.println("Max Phrase Length from your SOURCE: " + max_length + "\n");
+		analyzer.printSystemLimits();
+		System.out.println();
+		
+		analyzer.getSuggestion(max_length);
+		System.out.println();
+		
+		ArrayList<String> badQuotesArray = analyzer.getBadQuotes(txtfile_name);
+		System.out.println("Default grid size CAN NOT accommodate these phrases: ");
+		System.out.println(badQuotesArray);
+		System.out.println();
+		
+		String answer = "";
+		if (max_length > 112) {
+			System.out.println("Do you still want to continue creating the slides?(Y/N) or Enter 'C' to change grid size: ");
+			answer = scan.nextLine();
+		}
+		else {
+			answer = "Y";
+		}
+		
+		if (answer.equalsIgnoreCase("C")) {
+			System.out.println("Enter number of columns: ");
+			int column = scan.nextInt();
+			num_column = column;
+			
+			System.out.println("Enter number of rows: ");
+			int row = scan.nextInt();
+			num_row = row;
+			answer = "Y";
+			
+			if (column == 18 && row == 12) {
+				char_limit = 83;
+			}
+			if (column == 20 && row == 12) {
+				char_limit = 88;
+			}
+			if (column == 16 && row == 14) {
+				char_limit = 85;
+			}
+			if (column == 18 && row == 14) {
+				char_limit = 90;
+			}
+			if (column == 20 && row == 14) {
+				char_limit = 100;
+			}
+			if (column == 16 && row == 16) {
+				char_limit = 100;
+			}
+			if (column == 18 && row == 16) {
+				char_limit = 102;
+			}
+			if (column == 20 && row == 16) {
+				char_limit = 105;
+			}
+			if (column == 16 && row == 18) {
+				char_limit = 106;
+			}
+			if (column == 18 && row == 18) {
+				char_limit = 107;
+			}
+			if (column == 20 && row == 18) {
+				char_limit = 112;
+			}
+			
+			System.out.println("Grid Size has been changed!");
+		}
+		
+		if (answer.equalsIgnoreCase("Y")) {
+			System.out.println("Slides for phrases over 112 characters will not be created! Will be replaced with Empty Slides!");
+			System.out.println();
+			
+			ArrayList<String> list_quotes = new ArrayList<String>();
+			
+			if (SOURCE.equalsIgnoreCase("DATABASE")) {
+				System.out.println("Enter the starting ID: ");
+				int startID = scan.nextInt();
+				user.setStartID(startID);
+				
+				System.out.println("Enter the ending ID: ");
+				int endID = scan.nextInt();
+				user.setEndID(endID);
+				
+				String statement = "SELECT quote FROM quote_table WHERE id BETWEEN " + user.getStartID() + " AND " + user.getEndID();
+				list_quotes = Source.connect_to_db(statement);
+				System.out.println("Connected to Database!\n");
+			}
+			else {
+				list_quotes = Source.getQuotesFromtxt(txtfile_name);
+			}
+			
+			genPowerPoint(list_quotes);
+		}
+		else {
+			System.out.println("End.");
+		}
 	}
 }
