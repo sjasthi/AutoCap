@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
 public class API {
 	
 	/**
@@ -69,18 +68,18 @@ public class API {
 		String newURL = URL.replaceAll(" ", "%20");
         
 		Client client = Client.create();
-       		WebResource resource = client.resource(newURL);
-        	String response = resource.get(String.class);
+      	 	WebResource resource = client.resource(newURL);
+       	 	String response = resource.get(String.class);
         
        		int index = response.indexOf("{");
-       	 	response = response.substring(index);
-       	 	JSONObject myObject = new JSONObject(response); 
+       		response = response.substring(index);
+       		JSONObject myObject = new JSONObject(response); 
         	
         	JSONArray jsonArray = myObject.getJSONArray("data");
             
         	for (int j = 0; j < jsonArray.length(); j++) {
         		quote_array.add(jsonArray.getString(j));
-        	}
+       		}
 	
 		return quote_array;
 	}
