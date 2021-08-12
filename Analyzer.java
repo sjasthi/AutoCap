@@ -21,6 +21,11 @@ public class Analyzer {
 		System.out.println("        20x18                    112        ");
 	}
 	
+	/**
+	 * @author AutoCap
+	 * This method grabs the length of the longest quote from the connected database and passes it into suggestion method.
+	 * 
+	 */
 	public int getMaxLength(String txtfile_name) throws SQLException {
 		
 		ArrayList<String> quote_array = new ArrayList<String>();
@@ -43,6 +48,11 @@ public class Analyzer {
 		
 		return max_length;
 	}
+	/**
+	 * @author AutoCap
+	 * This method collects a list of quotes that exceed the tested amount of tested quote sizes and returns it.
+	 * 
+	 */
 	
 	public ArrayList<String> getBadQuotes(String txtfile_name) throws SQLException {
 		ArrayList<String> arrayBadQuotes = new ArrayList<String>();
@@ -66,7 +76,11 @@ public class Analyzer {
 		
 		return arrayBadQuotes;
 	}
-	
+	/**
+	 * @author AutoCap
+	 * This method suggest's the optimal grid sizes for the user to use when generating.
+	 * 
+	 */
 	public void getSuggestion(int max_length) {
 		System.out.println("Grid Size Suggested: ");
 		

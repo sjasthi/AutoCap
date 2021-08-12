@@ -12,7 +12,7 @@ public class Source {
 
 	/**
 	 * @author AutoCap
-	 * This method loops through the given CSV file and retrieves all quotes from the from it to then return an arraylist back to the Puzzle class.
+	 * This method loops through the given CSV file and retrieves all quotes from it to then return an arraylist back to the Puzzle class.
 	 * 
 	 */
 	public static ArrayList<String> getQuotesFromtxt(String file_name) {
